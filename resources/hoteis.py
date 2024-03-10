@@ -23,7 +23,7 @@ hoteis = [
     'cidade' : 'cidade 3'
     },
     {
-    'hotel_id' : '4',
+    'hotel_id' : 'teste',
     'nome' : 'hotel 4',
     'estrelas' : '2',
     'diaria' : '200.00',
@@ -34,3 +34,19 @@ hoteis = [
 class Hoteis(Resource):
     def get(self):
         return {'hoteis': hoteis}    
+
+class Hotel(Resource):
+    def get(self, hotel_id):
+        for hotel in hoteis:
+            if hotel['hotel_id'] == hotel_id:
+                return hotel
+        return {'message': 'Hotel não encontrado'}, 404
+
+    def post(self):
+        pass
+
+    def put(self):
+        pass
+
+    def delete(self):
+        pass
