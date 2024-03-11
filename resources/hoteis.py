@@ -29,40 +29,56 @@ hoteis = [
     'diaria' : '200.00',
     'cidade' : 'cidade 4'
     }
-    ]
-
+]
 class Hoteis(Resource):
+    
+   
+    #GET ALL
     def get(self):
         return {'hoteis': hoteis}    
 
-class Hotel(Resource):
-    def get(self, hotel_id):
+    def findHotel(hotel_id):
         for hotel in hoteis:
             if hotel['hotel_id'] == hotel_id:
                 return hotel
+        return None    
+class Hotel(Resource):
+     #ARGUMENTS
+    argumentos = reqparse.RequestParser()
+    argumentos.add_argument('nome', type=str, required=True, help="The field 'nome' cannot be left blank")
+    argumentos.add_argument('estrelas', type=float, required=True, help="The field 'estrelas' cannot be left blank")
+    argumentos.add_argument('diaria', type=float, required=True, help="The field 'diaria' cannot be left blank")
+    argumentos.add_argument('cidade', type=str, required=True, help="The field 'cidade' cannot be left blank")
+    
+    #GET BY ID
+    def get(self, hotel_id):
+        hotel = Hoteis.findHotel(hotel_id)
+        if hotel:
+            return hotel
         return {'message': 'Hotel não encontrado'}, 404
-
+    
+    #POST
     def post(self, hotel_id):
-        argumentos = reqparse.RequestParser()
-        argumentos.add_argument('nome', type=str, required=True, help="The field 'nome' cannot be left blank")
-        argumentos.add_argument('estrelas', type=float, required=True, help="The field 'estrelas' cannot be left blank")
-        argumentos.add_argument('diaria', type=float, required=True, help="The field 'diaria' cannot be left blank")
-        argumentos.add_argument('cidade', type=str, required=True, help="The field 'cidade' cannot be left blank")
-
-        dados = argumentos.parse_args()
-        
-        novo_hotel = {
-            'hotel_id' : hotel_id,
-            'nome' : dados['nome'],
-            'estrelas' : dados['estrelas'],
-            'diaria' : dados['diaria'],
-            'cidade' : dados['cidade']
-        }
+        dados = Hotel.argumentos.parse_args()       
+        novo_hotel = {'hotel_id' : hotel_id, **dados}
         hoteis.append(novo_hotel)
         return novo_hotel, 200
 
+    #PUT
     def put(self, hotel_id):
-        pass
-
+        dados = Hotel.argumentos.parse_args()
+        novo_hotel = { 'hotel_id' : hotel_id, **dados }
+        hotel = Hoteis.findHotel(hotel_id)
+        if hotel:
+            hotel.update(novo_hotel)
+            return novo_hotel, 200
+        hoteis.append(novo_hotel)
+        return novo_hotel, 201
+    
+    #DELETE
     def delete(self, hotel_id):
-        pass
+        global hoteis
+        hoteis = [hotel for hotel in hoteis if hotel['hotel_id'] != hotel_id]
+        return {'message': 'Hotel deleted.'}, 200
+
+        
