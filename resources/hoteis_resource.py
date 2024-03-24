@@ -1,4 +1,5 @@
 from flask_restful import Resource, reqparse
+from models.hoteis_model import HotelModel
 
 hoteis = [
     {
@@ -31,26 +32,8 @@ hoteis = [
     }
 ]
 
-class HotelModel:
-    def __init__(self, hotel_id, nome, estrelas, diaria, cidade):
-        self.hotel_id = hotel_id
-        self.nome = nome
-        self.estrelas = estrelas
-        self.diaria = diaria
-        self.cidade = cidade
-    def json(self):
-        return {
-            'hotel_id': self.hotel_id,
-            'nome': self.nome,
-            'estrelas': self.estrelas,
-            'diaria': self.diaria,
-            'cidade': self.cidade
-        }
-        
 
 class Hoteis(Resource):
-    
-   
     #GET ALL
     def get(self):
         return {'hoteis': hoteis}    
@@ -101,5 +84,4 @@ class Hotel(Resource):
         global hoteis
         hoteis = [hotel for hotel in hoteis if hotel['hotel_id'] != hotel_id]
         return {'message': 'Hotel deleted.'}, 200
-
         
